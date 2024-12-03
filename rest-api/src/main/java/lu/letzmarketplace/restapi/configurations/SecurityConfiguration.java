@@ -1,7 +1,6 @@
 package lu.letzmarketplace.restapi.configurations;
 
 import lu.letzmarketplace.restapi.services.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +24,6 @@ public class SecurityConfiguration {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTFilter jwtFitler;
 
-    @Autowired
     public SecurityConfiguration(
             BCryptPasswordEncoder bCryptPasswordEncoder,
             CustomCorsConfiguration corsConfiguration,

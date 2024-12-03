@@ -1,6 +1,5 @@
 package lu.letzmarketplace.restapi.configurations;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +8,6 @@ import lu.letzmarketplace.restapi.models.User;
 import lu.letzmarketplace.restapi.repositories.UserRepository;
 import lu.letzmarketplace.restapi.services.CustomUserDetailsService;
 import lu.letzmarketplace.restapi.services.JWTService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +24,6 @@ public class JWTFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
     private final UserRepository userRepository;
 
-    @Autowired
     public JWTFilter(
             JWTService jwtService,
             CustomUserDetailsService customUserDetailsService,

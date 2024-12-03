@@ -7,7 +7,6 @@ import lu.letzmarketplace.restapi.mappers.UserRegistrationMapper;
 import lu.letzmarketplace.restapi.mappers.UserMapper;
 import lu.letzmarketplace.restapi.models.User;
 import lu.letzmarketplace.restapi.services.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,6 @@ public class AuthController {
     private final UserRegistrationMapper userRegistrationMapper;
     private final UserLoginMapper userLoginMapper;
 
-    @Autowired
     public AuthController(
             AuthService authService,
             UserMapper userMapper,

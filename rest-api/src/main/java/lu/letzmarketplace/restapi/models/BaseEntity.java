@@ -10,6 +10,9 @@ import java.util.UUID;
 
 @Data
 @MappedSuperclass
+// Add this annotation to children entities for
+// equals() to take in consideration values of this class as well
+// @EqualsAndHashCode(callSuper = true)
 public abstract class BaseEntity {
 
     @Id
