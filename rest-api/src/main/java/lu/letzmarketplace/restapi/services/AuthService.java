@@ -1,5 +1,6 @@
 package lu.letzmarketplace.restapi.services;
 
+import lombok.RequiredArgsConstructor;
 import lu.letzmarketplace.restapi.dto.JWTResponseDTO;
 import lu.letzmarketplace.restapi.exceptions.EmailAlreadyExistsException;
 import lu.letzmarketplace.restapi.exceptions.UsernameAlreadyExistsException;
@@ -15,23 +16,12 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
-
-    public AuthService(
-            UserRepository userRepository,
-            BCryptPasswordEncoder bCryptPasswordEncoder,
-            AuthenticationManager authenticationManager,
-            JWTService jwtService
-    ) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
-    }
 
     public User register(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {

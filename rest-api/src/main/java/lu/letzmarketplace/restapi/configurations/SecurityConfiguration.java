@@ -1,5 +1,6 @@
 package lu.letzmarketplace.restapi.configurations;
 
+import lombok.RequiredArgsConstructor;
 import lu.letzmarketplace.restapi.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,27 +18,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final CustomCorsConfiguration corsConfiguration;
     private final CustomUserDetailsService customUserDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTFilter jwtFitler;
-
-    public SecurityConfiguration(
-            BCryptPasswordEncoder bCryptPasswordEncoder,
-            CustomCorsConfiguration corsConfiguration,
-            CustomUserDetailsService customUserDetailsService,
-            AuthenticationConfiguration authenticationConfiguration,
-            JWTFilter jwtFiter
-    ) {
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.corsConfiguration = corsConfiguration;
-        this.customUserDetailsService = customUserDetailsService;
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.jwtFitler = jwtFiter;
-    }
-
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

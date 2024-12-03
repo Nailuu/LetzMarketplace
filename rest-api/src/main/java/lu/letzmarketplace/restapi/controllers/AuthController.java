@@ -1,6 +1,7 @@
 package lu.letzmarketplace.restapi.controllers;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lu.letzmarketplace.restapi.dto.*;
 import lu.letzmarketplace.restapi.mappers.UserLoginMapper;
 import lu.letzmarketplace.restapi.mappers.UserRegistrationMapper;
@@ -13,24 +14,13 @@ import org.springframework.web.bind.annotation.*;
 
 // TODO: Implements tests
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthService authService;
     private final UserMapper userMapper;
     private final UserRegistrationMapper userRegistrationMapper;
     private final UserLoginMapper userLoginMapper;
-
-    public AuthController(
-            AuthService authService,
-            UserMapper userMapper,
-            UserRegistrationMapper userRegistrationMapper,
-            UserLoginMapper userLoginMapper
-    ) {
-        this.authService = authService;
-        this.userMapper = userMapper;
-        this.userRegistrationMapper = userRegistrationMapper;
-        this.userLoginMapper = userLoginMapper;
-    }
 
     @PostMapping("register")
     public ResponseEntity<UserDTO> register(@RequestBody @Valid UserRegistrationRequestDTO dto) {

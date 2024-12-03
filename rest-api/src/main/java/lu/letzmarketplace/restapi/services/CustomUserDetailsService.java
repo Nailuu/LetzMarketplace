@@ -1,5 +1,6 @@
 package lu.letzmarketplace.restapi.services;
 
+import lombok.RequiredArgsConstructor;
 import lu.letzmarketplace.restapi.models.User;
 import lu.letzmarketplace.restapi.models.UserPrincipal;
 import lu.letzmarketplace.restapi.repositories.UserRepository;
@@ -9,12 +10,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
-
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

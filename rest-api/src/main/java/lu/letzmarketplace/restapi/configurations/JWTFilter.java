@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lu.letzmarketplace.restapi.models.User;
 import lu.letzmarketplace.restapi.repositories.UserRepository;
 import lu.letzmarketplace.restapi.services.CustomUserDetailsService;
@@ -18,21 +19,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
-
     private final JWTService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
     private final UserRepository userRepository;
-
-    public JWTFilter(
-            JWTService jwtService,
-            CustomUserDetailsService customUserDetailsService,
-            UserRepository userRepository) {
-        this.jwtService = jwtService;
-        this.customUserDetailsService = customUserDetailsService;
-        this.userRepository = userRepository;
-    }
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
