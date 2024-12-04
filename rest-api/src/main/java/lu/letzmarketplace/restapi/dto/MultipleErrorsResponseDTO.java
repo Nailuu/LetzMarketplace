@@ -6,14 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ErrorResponseDTO {
+public class MultipleErrorsResponseDTO {
     private LocalDateTime timestamp;
     private int status;
-    private String error;
+    private Map<String, String> errors;
     private String path;
 }

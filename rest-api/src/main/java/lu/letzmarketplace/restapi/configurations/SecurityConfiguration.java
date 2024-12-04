@@ -24,7 +24,7 @@ public class SecurityConfiguration {
     private final CustomCorsConfiguration corsConfiguration;
     private final CustomUserDetailsService customUserDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final JWTFilter jwtFitler;
+    private final JWTFilter jwtFilter;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -56,7 +56,7 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(c -> c.configurationSource(corsConfiguration))
-                .addFilterBefore(jwtFitler, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }

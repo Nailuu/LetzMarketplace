@@ -21,8 +21,8 @@ public class JWTService {
     @Value("${jwt.secret.key}")
     private String secretKey;
 
-    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15; // 15 minutes
-    private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 7; // 7 days
+    private long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15; // 15 minutes
+    private long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 7; // 7 days
 
     public String generateAccessToken(User user) {
         Map<String, Object> claims = new HashMap<>();
@@ -88,7 +88,7 @@ public class JWTService {
         return extractClaim(token, claims -> claims.get("type", String.class));
     }
 
-    private String extractSubject(String token) {
+    public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -97,7 +97,10 @@ public class JWTService {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        Date exp = extractExpiration(token);
+        Date now = new Date();
+
+        return exp.before(now);
     }
 
     public boolean validateToken(String token, User user) {

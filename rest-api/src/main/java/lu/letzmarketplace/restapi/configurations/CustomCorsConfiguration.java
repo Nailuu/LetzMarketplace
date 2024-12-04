@@ -1,6 +1,7 @@
 package lu.letzmarketplace.restapi.configurations;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
@@ -16,7 +17,7 @@ public class CustomCorsConfiguration implements CorsConfigurationSource {
     private String[] allowedOrigins;
 
     @Override
-    public org.springframework.web.cors.CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+    public org.springframework.web.cors.CorsConfiguration getCorsConfiguration(@NonNull HttpServletRequest request) {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(Arrays.asList(allowedOrigins));
