@@ -1,0 +1,30 @@
+pipeline {
+    agent {
+        label 'docker-agent'
+    }
+
+    triggers {
+        pollSCM('H/3 * * * *')
+    }
+
+    environment {
+        CORS = credentials('cors')
+        JWT_SECRET_KEY = credentials('jwt_secret_key')
+        DB_PORT = credentials('db_port')
+        DB_HOST = credentials('db_host')
+        DB_NAME = credentials('db_name')
+        DB_USERNAME = credentials('db_username')
+        DB_PASSWORD = credentials('db_password')
+        TEST_DB_PORT = credentials('test_db_port')
+        TEST_DB_HOST = credentials('test_db_host')
+        TEST_DB_NAME = credentials('test_db_name')
+        TEST_DB_USERNAME = credentials('test_db_username')
+        TEST_DB_PASSWORD = credentials('test_db_password')
+    }
+
+    stages {
+        stage('Build') {}
+        stage('Test') {}
+        stage('Deploy') {}
+    }
+}
