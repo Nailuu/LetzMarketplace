@@ -25,7 +25,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                withMaven {
+                withMaven(traceability: true) {
                     sh 'mvn --version'
                     sh 'mvn -B -DskipTests clean package'
                 }
