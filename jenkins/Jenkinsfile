@@ -36,7 +36,7 @@ pipeline {
             steps {
                 withMaven {
                     sh 'mvn --version'
-                    sh 'mvn -B -DskipTests -Drevision=1.0.${env.BUILD_NUMBER} clean package'
+                    sh 'mvn -B -DskipTests -Drevision=1.0.$BUILD_NUMBER clean package'
                 }
             }
         }
@@ -47,18 +47,18 @@ pipeline {
 
                 echo 'Cleaning database schemas...'
                 sh '''
-                flyway -url=jdbc:postgresql://${env.$TEST_DB_HOST}:${env.TEST_DB_PORT}/${env.TEST_DB_NAME} \
-                    -user=${env.TEST_DB_USERNAME} \
-                    -password=${env.TEST_DB_PASSWORD} \
+                flyway -url=jdbc:postgresql://$TEST_DB_HOST:$TEST_DB_PORT/$TEST_DB_NAME \
+                    -user=$TEST_DB_USERNAME \
+                    -password=$TEST_DB_PASSWORD \
                     -cleanDisabled="false" \
                     clean
                 '''
 
                 echo 'Running database migration...'
                 sh '''
-                flyway -url=jdbc:postgresql://${env.TEST_DB_HOST}:${env.TEST_DB_PORT}/${env.TEST_DB_NAME} \
-                    -user=${env.TEST_DB_USERNAME} \
-                    -password=${env.TEST_DB_PASSWORD} \
+                flyway -url=jdbc:postgresql://$TEST_DB_HOST:$TEST_DB_PORT/$TEST_DB_NAME \
+                    -user=$TEST_DB_USERNAME \
+                    -password=$TEST_DB_PASSWORD \
                     -locations=filesystem:./src/main/resources/db/migration \
                     migrate
                 '''
@@ -82,16 +82,16 @@ pipeline {
             steps {
                 script {
                     def response = sh(script: """
-                        curl -X POST -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                        curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
                         -d '{
-                        "tag_name": "${env.RELEASE_TAG}",
+                        "tag_name": "$RELEASE_TAG",
                         "target_commitish": "main",
-                        "name": "${env.RELEASE_NAME}",
-                        "body": "${env.RELEASE_BODY}",
+                        "name": "$RELEASE_NAME",
+                        "body": "$RELEASE_BODY",
                         "draft": false,
                         "prerelease": false
                         }' \
-                        https://api.github.com/repos/${env.GITHUB_REPO}/releases
+                        https://api.github.com/repos/$GITHUB_REPO/releases
                     """, returnStdout: true).trim()
 
                     def release = readJSON text: response
@@ -104,10 +104,10 @@ pipeline {
             steps {
                 script {
                 sh """
-                curl -X POST -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
                 -H "Content-Type: application/octet-stream" \
-                --data-binary @${env.JAR_FILE_PATH} \
-                "https://uploads.github.com/repos/${env.GITHUB_REPO}/releases/${env.RELEASE_ID}/assets?name=rest-api-${env.BUILD_NUMBER}.jar"
+                --data-binary @$JAR_FILE_PATH \
+                "https://uploads.github.com/repos/$GITHUB_REPO/releases/$RELEASE_ID/assets?name=rest-api-$BUILD_NUMBER.jar"
                 """
                 }
             }
