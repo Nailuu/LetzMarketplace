@@ -10,16 +10,25 @@ pipeline {
     environment {
         CORS = credentials('CORS')
         JWT_SECRET_KEY = credentials('JWT_SECRET_KEY')
+
         DB_HOST = credentials('DB_HOST')
         DB_PORT = 5432
         DB_NAME = "lmkp"
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
+
         TEST_DB_HOST = credentials('TEST_DB_HOST')
         TEST_DB_PORT = 5432
         TEST_DB_NAME = "postgres"
         TEST_DB_USERNAME = credentials('TEST_DB_USERNAME')
         TEST_DB_PASSWORD = credentials('TEST_DB_PASSWORD')
+
+        GITHUB_TOKEN = credentials('GITHUB_TOKEN')
+        GITHUB_REPO = 'Nailuu/LetzMarketplaceAPI'
+        RELEASE_TAG = "v1.0.${env.BUILD_NUMBER}"
+        RELEASE_NAME = "Release v1.0.${env.BUILD_NUMBER}"
+        RELEASE_BODY = "Automated release created by Jenkins pipeline."
+        JAR_FILE_PATH = "target/rest-api-${env.BUILD_NUMBER}.jar"
     }
 
     stages {
@@ -27,7 +36,7 @@ pipeline {
             steps {
                 withMaven {
                     sh 'mvn --version'
-                    sh 'mvn -B -DskipTests -Drevision=1.0.$BUILD_NUMBER-SNAPSHOT clean package'
+                    sh 'mvn -B -DskipTests -Drevision=1.0.${env.BUILD_NUMBER} clean package'
                 }
             }
         }
@@ -38,18 +47,18 @@ pipeline {
 
                 echo 'Cleaning database schemas...'
                 sh '''
-                flyway -url=jdbc:postgresql://$TEST_DB_HOST:$TEST_DB_PORT/$TEST_DB_NAME \
-                    -user=$TEST_DB_USERNAME \
-                    -password=$TEST_DB_PASSWORD \
+                flyway -url=jdbc:postgresql://${env.$TEST_DB_HOST}:${env.TEST_DB_PORT}/${env.TEST_DB_NAME} \
+                    -user=${env.TEST_DB_USERNAME} \
+                    -password=${env.TEST_DB_PASSWORD} \
                     -cleanDisabled="false" \
                     clean
                 '''
 
                 echo 'Running database migration...'
                 sh '''
-                flyway -url=jdbc:postgresql://$TEST_DB_HOST:$TEST_DB_PORT/$TEST_DB_NAME \
-                    -user=$TEST_DB_USERNAME \
-                    -password=$TEST_DB_PASSWORD \
+                flyway -url=jdbc:postgresql://${env.TEST_DB_HOST}:${env.TEST_DB_PORT}/${env.TEST_DB_NAME} \
+                    -user=${env.TEST_DB_USERNAME} \
+                    -password=${env.TEST_DB_PASSWORD} \
                     -locations=filesystem:./src/main/resources/db/migration \
                     migrate
                 '''
@@ -65,6 +74,41 @@ pipeline {
             post {
                 always {
                     junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Create GitHub Release') {
+            steps {
+                script {
+                    def response = sh(script: """
+                        curl -X POST -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                        -d '{
+                        "tag_name": "${env.RELEASE_TAG}",
+                        "target_commitish": "main",
+                        "name": "${env.RELEASE_NAME}",
+                        "body": "${env.RELEASE_BODY}",
+                        "draft": false,
+                        "prerelease": false
+                        }' \
+                        https://api.github.com/repos/${env.GITHUB_REPO}/releases
+                    """, returnStdout: true).trim()
+
+                    def release = readJSON text: response
+                    env.RELEASE_ID = release.id
+                }
+            }
+        }
+
+        stage('Upload .jar to GitHub Release') {
+            steps {
+                script {
+                sh """
+                curl -X POST -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                -H "Content-Type: application/octet-stream" \
+                --data-binary @${env.JAR_FILE_PATH} \
+                "https://uploads.github.com/repos/${env.GITHUB_REPO}/releases/${env.RELEASE_ID}/assets?name=rest-api-${env.BUILD_NUMBER}.jar"
+                """
                 }
             }
         }
