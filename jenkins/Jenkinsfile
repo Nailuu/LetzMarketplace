@@ -35,15 +35,15 @@ pipeline {
         stage('Migrate Database') {
             steps {
                 echo "Cleaning database schemas..."
-                flyway 'flyway -url=jdbc:postgresql://${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME} \
-                    -user=${TEST_DB_USERNAME} \
-                    -password=${TEST_DB_PASSWORD} \
+                flyway 'flyway -url=jdbc:postgresql://$TEST_DB_HOST:$TEST_DB_PORT/$TEST_DB_NAME \
+                    -user=$TEST_DB_USERNAME \
+                    -password=$TEST_DB_PASSWORD \
                     clean'
 
                 echo 'Running database migration...'
-                sh 'flyway -url=jdbc:postgresql://${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME} \
-                           -user=${TEST_DB_USERNAME} \
-                           -password=${TEST_DB_PASSWORD} \
+                sh 'flyway -url=jdbc:postgresql://$TEST_DB_HOST:$TEST_DB_PORT/$TEST_DB_NAME \
+                           -user=$TEST_DB_USERNAME \
+                           -password=$TEST_DB_PASSWORD \
                            -locations=filesystem:./src/main/resources/db/migration \
                            migrate'
             }
