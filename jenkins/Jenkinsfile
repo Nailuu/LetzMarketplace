@@ -8,29 +8,24 @@ pipeline {
     }
 
     environment {
-        CORS = credentials('cors')
-        JWT_SECRET_KEY = credentials('jwt_secret_key')
-        DB_PORT = credentials('db_port')
-        DB_HOST = credentials('db_host')
-        DB_NAME = credentials('db_name')
-        DB_USERNAME = credentials('db_username')
-        DB_PASSWORD = credentials('db_password')
-        TEST_DB_PORT = credentials('test_db_port')
-        TEST_DB_HOST = credentials('test_db_host')
-        TEST_DB_NAME = credentials('test_db_name')
-        TEST_DB_USERNAME = credentials('test_db_username')
-        TEST_DB_PASSWORD = credentials('test_db_password')
+        CORS = credentials('CORS')
+        JWT_SECRET_KEY = credentials('JWT_SECRET_KEY')
+        DB_HOST = credentials('DB_HOST')
+        DB_PORT = 5432
+        DB_NAME = "lmkp"
+        DB_USERNAME = credentials('DB_USERNAME')
+        DB_PASSWORD = credentials('DB_PASSWORD')
+        TEST_DB_HOST = credentials('TEST_DB_HOST')
+        TEST_DB_PORT = 5432
+        TEST_DB_NAME = "test"
+        TEST_DB_USERNAME = credentials('TEST_DB_USERNAME')
+        TEST_DB_PASSWORD = credentials('TEST_DB_PASSWORD')
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build') {
             steps {
+                sh 'mvn --version'
                 sh 'mvn -B -DskipTests clean package'
             }
         }
