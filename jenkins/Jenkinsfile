@@ -17,7 +17,7 @@ pipeline {
         DB_PASSWORD = credentials('DB_PASSWORD')
         TEST_DB_HOST = credentials('TEST_DB_HOST')
         TEST_DB_PORT = 5432
-        TEST_DB_NAME = "test"
+        TEST_DB_NAME = "postgres"
         TEST_DB_USERNAME = credentials('TEST_DB_USERNAME')
         TEST_DB_PASSWORD = credentials('TEST_DB_PASSWORD')
     }
@@ -25,7 +25,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                withMaven(traceability: true) {
+                withMaven {
                     sh 'mvn --version'
                     sh 'mvn -B -DskipTests clean package'
                 }
@@ -39,12 +39,6 @@ pipeline {
                     return changes.contains('src/main/resources/db/migration')
                 }
             }
-            agent {
-                docker {
-                    image 'postgres:16'
-                    args '--network="host"'
-                }
-            }
             steps {
                 echo "SQL schemas changes detected, running migration..."
                 sh 'flyway -url=jdbc:postgresql://${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME} \
@@ -56,14 +50,10 @@ pipeline {
         }
 
         stage('Test') {
-            agent {
-                docker {
-                    image 'postgres:16'
-                     args '--network="host"'
-                }
-            }
             steps {
-                sh 'mvn test'
+                withMaven {
+                    sh 'mvn test'
+                }
             }
             post {
                 always {
