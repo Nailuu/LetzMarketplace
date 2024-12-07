@@ -50,7 +50,8 @@ public class SecurityConfiguration {
                         .requestMatchers(
                                 "/error",
                                 "/api/v1/auth/register",
-                                "/api/v1/auth/login"
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/verify"
                         )
                         .permitAll()
                         .anyRequest().authenticated())

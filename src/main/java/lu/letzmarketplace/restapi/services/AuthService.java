@@ -1,9 +1,12 @@
 package lu.letzmarketplace.restapi.services;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lu.letzmarketplace.restapi.dto.JWTResponseDTO;
+import lu.letzmarketplace.restapi.exceptions.BadRequestException;
 import lu.letzmarketplace.restapi.exceptions.EmailAlreadyExistsException;
 import lu.letzmarketplace.restapi.exceptions.UsernameAlreadyExistsException;
+import lu.letzmarketplace.restapi.models.JWTRefreshTokenHistory;
 import lu.letzmarketplace.restapi.models.User;
 import lu.letzmarketplace.restapi.repositories.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -20,6 +25,7 @@ public class AuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
+    private final MailerService mailerService;
 
     public User register(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -30,7 +36,14 @@ public class AuthService {
 
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
-        return userRepository.save(user);
+        // TODO: Generate token
+        user.setEmailVerifyToken("123");
+
+        userRepository.save(user);
+
+        mailerService.sendUserVerificationEmail(user);
+
+        return user;
     }
 
     public JWTResponseDTO login(User user) {
@@ -50,7 +63,6 @@ public class AuthService {
                 .build();
     }
 
-    // TODO: Store refresh token, at each /refresh call, invalidate previous refresh token
     public JWTResponseDTO refresh(String refreshToken) {
         String email = jwtService.extractEmail(refreshToken);
         String type = jwtService.extractType(refreshToken);
@@ -65,11 +77,34 @@ public class AuthService {
         if (!jwtService.validateToken(refreshToken, user)) {
             return null;
         }
-
         assert user != null;
+
+        JWTRefreshTokenHistory allowed = jwtService.getRefreshTokenHistoryByUserId(user.getId()).orElse(null);
+        assert allowed != null;
+
+        if (!refreshToken.equals(allowed.getToken())) {
+            throw new BadRequestException("Refresh token is invalid due to newer refresh token");
+        }
+
         return JWTResponseDTO.builder()
                 .access(jwtService.generateAccessToken(user))
                 .refresh(jwtService.generateRefreshToken(user))
                 .build();
+    }
+
+    public User verifyEmail(String token) {
+        User user = userRepository.findByEmailVerifyToken(token)
+                .orElse(null);
+
+        if (user == null) {
+            throw new BadRequestException("Invalid token");
+        }
+
+        user.setEmailVerified(true);
+        user.setEmailVerifyToken(null);
+
+        userRepository.save(user);
+
+        return user;
     }
 }

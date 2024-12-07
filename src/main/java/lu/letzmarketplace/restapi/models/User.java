@@ -38,6 +38,12 @@ public class User {
     @Column(name = "password", nullable = false, length = 100)
     private String password;
 
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(name = "email_verify_token", length = 250)
+    private String emailVerifyToken;
+
     @Column(name = "created_at", updatable = false, nullable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;

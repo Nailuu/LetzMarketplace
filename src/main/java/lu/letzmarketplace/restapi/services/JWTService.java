@@ -5,18 +5,22 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import lu.letzmarketplace.restapi.models.JWTRefreshTokenHistory;
 import lu.letzmarketplace.restapi.models.User;
+import lu.letzmarketplace.restapi.repositories.JWTRefreshTokenHistoryRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JWTService {
+    private final JWTRefreshTokenHistoryRepository refreshTokenHistoryRepository;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -45,13 +49,17 @@ public class JWTService {
         claims.put("email", user.getEmail());
         claims.put("username", user.getUsername());
 
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .claims(claims)
                 .subject(String.valueOf(user.getId()))
                 .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .signWith(getKey())
                 .compact();
+
+        storeOrUpdateRefreshToken(user, token);
+
+        return token;
     }
 
     private SecretKey getKey() {
@@ -108,5 +116,22 @@ public class JWTService {
 
         final String userId = extractSubject(token);
         return (user.getId().toString().equals(userId) && !isTokenExpired(token));
+    }
+
+    public void storeOrUpdateRefreshToken(User user, String token) {
+        JWTRefreshTokenHistory history = JWTRefreshTokenHistory.builder()
+                .token(token)
+                .userId(user.getId())
+                .build();
+
+        if (refreshTokenHistoryRepository.findByUserId(user.getId()).isPresent()) {
+            refreshTokenHistoryRepository.updateByUserId(user.getId(), history);
+        } else {
+            refreshTokenHistoryRepository.save(history);
+        }
+    }
+
+    public Optional<JWTRefreshTokenHistory> getRefreshTokenHistoryByUserId(UUID userId) {
+        return refreshTokenHistoryRepository.findByUserId(userId);
     }
 }

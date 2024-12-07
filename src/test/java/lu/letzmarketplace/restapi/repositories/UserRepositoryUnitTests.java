@@ -24,7 +24,7 @@ class UserRepositoryUnitTests {
     @Test
     @DisplayName("Test 1: Save new user")
     @Order(1)
-    @Rollback(value = false)
+    @Rollback(false)
     void saveUser() {
         // Action
         User user = User.builder()

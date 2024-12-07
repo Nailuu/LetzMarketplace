@@ -14,6 +14,7 @@ public class UserMapper extends BaseMapper<UserDTO, User> {
                 .email(dto.getEmail())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
+                .emailVerified(dto.isEmailVerified())
                 .build();
     }
 
@@ -24,6 +25,7 @@ public class UserMapper extends BaseMapper<UserDTO, User> {
                 .email(entity.getEmail())
                 .firstName(entity.getFirstName())
                 .lastName(entity.getLastName())
+                .emailVerified(entity.isEmailVerified())
                 .build();
     }
 }

@@ -1,8 +1,10 @@
 package lu.letzmarketplace.restapi.services;
 
 import lu.letzmarketplace.restapi.dto.JWTResponseDTO;
+import lu.letzmarketplace.restapi.exceptions.BadRequestException;
 import lu.letzmarketplace.restapi.exceptions.EmailAlreadyExistsException;
 import lu.letzmarketplace.restapi.exceptions.UsernameAlreadyExistsException;
+import lu.letzmarketplace.restapi.models.JWTRefreshTokenHistory;
 import lu.letzmarketplace.restapi.models.User;
 import lu.letzmarketplace.restapi.repositories.UserRepository;
 import org.junit.jupiter.api.*;
@@ -175,28 +177,6 @@ class AuthServiceUnitTests {
         verify(authenticationManager).authenticate(Mockito.any(UsernamePasswordAuthenticationToken.class));
         verify(authentication).isAuthenticated();
     }
-//
-//    public JWTResponseDTO refresh(String refreshToken) {
-//        String email = jwtService.extractEmail(refreshToken);
-//        String type = jwtService.extractType(refreshToken);
-//
-//        if (email == null || type == null || !type.equals("refresh")) {
-//            return null;
-//        }
-//
-//        User user = userRepository.findByEmail(email)
-//                .orElse(null);
-//
-//        if (!jwtService.validateToken(refreshToken, user)) {
-//            return null;
-//        }
-//
-//        assert user != null;
-//        return JWTResponseDTO.builder()
-//                .access(jwtService.generateAccessToken(user))
-//                .refresh(jwtService.generateRefreshToken(user))
-//                .build();
-//    }
 
     @Test
     @DisplayName("Test 7: Refresh JWT token")
@@ -211,6 +191,9 @@ class AuthServiceUnitTests {
         given(jwtService.extractType(token)).willReturn("refresh");
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
         given(jwtService.validateToken(token, user)).willReturn(true);
+        given(jwtService.getRefreshTokenHistoryByUserId(user.getId())).willReturn(
+                Optional.of(JWTRefreshTokenHistory.builder().token(refreshToken).build())
+        );
         given(jwtService.generateAccessToken(user)).willReturn(accessToken);
         given(jwtService.generateRefreshToken(user)).willReturn(refreshToken);
 
@@ -272,5 +255,32 @@ class AuthServiceUnitTests {
         verify(jwtService).extractType(token);
         verify(userRepository).findByEmail(user.getEmail());
         verify(jwtService).validateToken(token, user);
+    }
+
+    @Test
+    @DisplayName("Test 10: Refresh JWT token not in history")
+    @Order(10)
+    void refreshInvalidatedToken() {
+        // Pre-condition
+        final String token = "token123";
+        final String accessToken = "access123";
+        final String refreshToken = "refresh123";
+
+        given(jwtService.extractEmail(token)).willReturn(user.getEmail());
+        given(jwtService.extractType(token)).willReturn("refresh");
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        given(jwtService.validateToken(token, user)).willReturn(true);
+        given(jwtService.getRefreshTokenHistoryByUserId(user.getId())).willReturn(
+                Optional.of(JWTRefreshTokenHistory.builder().token("refresh789").build())
+        );
+
+        // Verify & Assert
+        assertThrows(BadRequestException.class, () -> authService.refresh(token));
+
+        verify(jwtService).extractEmail(token);
+        verify(jwtService).extractType(token);
+        verify(userRepository).findByEmail(user.getEmail());
+        verify(jwtService).validateToken(token, user);
+        verify(jwtService).getRefreshTokenHistoryByUserId(user.getId());
     }
 }

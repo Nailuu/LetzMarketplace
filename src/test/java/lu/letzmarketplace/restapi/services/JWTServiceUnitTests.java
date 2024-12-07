@@ -225,4 +225,18 @@ class JWTServiceUnitTests {
         // Assert & Verify
         assertThat(jwtService.validateToken(token, user)).isFalse();
     }
+
+    @Test
+    @DisplayName("")
+    @Order(14)
+    void storeOrUpdateRefreshToken() {
+        assertThat(null).isNotNull();
+    }
+
+    @Test
+    @DisplayName("")
+    @Order(15)
+    void getRefreshTokenHistoryByUserId() {
+        assertThat(null).isNotNull();
+    }
 }

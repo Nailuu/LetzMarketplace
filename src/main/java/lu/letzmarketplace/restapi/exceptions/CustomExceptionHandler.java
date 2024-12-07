@@ -56,5 +56,16 @@ public class CustomExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadRequestException.class)
+    public ErrorResponseDTO handleBadRequestException(BadRequestException ex, HttpServletRequest request) {
+        return ErrorResponseDTO.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+    }
 }
 

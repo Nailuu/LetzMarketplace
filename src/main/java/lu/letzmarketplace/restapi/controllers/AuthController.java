@@ -1,6 +1,7 @@
 package lu.letzmarketplace.restapi.controllers;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lu.letzmarketplace.restapi.dto.*;
 import lu.letzmarketplace.restapi.exceptions.InvalidJWTTokenException;
@@ -52,5 +53,12 @@ public class AuthController {
             throw new InvalidJWTTokenException();
 
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("verify")
+    public ResponseEntity<UserDTO> verify(@RequestParam @NotNull String token) {
+        User user = authService.verifyEmail(token);
+
+        return new ResponseEntity<>(userMapper.toDto(user), HttpStatus.OK);
     }
 }
