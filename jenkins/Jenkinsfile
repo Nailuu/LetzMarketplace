@@ -33,14 +33,14 @@ pipeline {
         }
 
         stage('Migrate Database') {
-            when {
-                expression {
-                    def changes = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim()
-                    return changes.contains('src/main/resources/db/migration')
-                }
-            }
             steps {
-                echo "SQL schemas changes detected, running migration..."
+                echo "Cleaning database schemas..."
+                flyway 'flyway -url=jdbc:postgresql://${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME} \
+                    -user=${TEST_DB_USERNAME} \
+                    -password=${TEST_DB_PASSWORD} \
+                    clean'
+
+                echo 'Running database migration...'
                 sh 'flyway -url=jdbc:postgresql://${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME} \
                            -user=${TEST_DB_USERNAME} \
                            -password=${TEST_DB_PASSWORD} \
