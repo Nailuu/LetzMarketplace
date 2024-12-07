@@ -27,7 +27,7 @@ pipeline {
             steps {
                 withMaven {
                     sh 'mvn --version'
-                    sh 'mvn -B -DskipTests clean package'
+                    sh 'mvn -B -DskipTests -Drevision=1.0.$BUILD_NUMBER-SNAPSHOT clean package'
                 }
             }
         }
@@ -36,7 +36,7 @@ pipeline {
             steps {
                 sh 'flyway -v'
 
-                echo "Cleaning database schemas..."
+                echo 'Cleaning database schemas...'
                 sh '''
                 flyway -url=jdbc:postgresql://$TEST_DB_HOST:$TEST_DB_PORT/$TEST_DB_NAME \
                     -user=$TEST_DB_USERNAME \
