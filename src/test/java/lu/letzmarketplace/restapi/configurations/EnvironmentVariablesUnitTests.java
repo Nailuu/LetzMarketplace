@@ -1,34 +1,26 @@
 package lu.letzmarketplace.restapi.configurations;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.io.Decoders;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 public class EnvironmentVariablesUnitTests {
-    @Autowired
-    private Environment env;
 
     @Test
     @DisplayName("CORS")
-    public void testCORS() {
-        String var = env.getProperty("CORS");
-
+    public void testCORS(@Value("${CORS}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
     @DisplayName("JWT_SECRET_KEY")
-    public void testJwtSecretKey() {
-        String var = env.getProperty("JWT_SECRET_KEY");
-
+    public void testJwtSecretKey(@Value("${JWT_SECRET_KEY}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
         assertThat(Decoders.BASE64.decode(var).length).isEqualTo(512);
@@ -36,90 +28,70 @@ public class EnvironmentVariablesUnitTests {
 
     @Test
     @DisplayName("DB_HOST")
-    public void testDbHost() {
-        String var = env.getProperty("DB_HOST");
-
+    public void testDbHost(@Value("${DB_HOST}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
     @DisplayName("DB_PORT")
-    public void testDbPort() {
-        String var = env.getProperty("DB_PORT");
-
+    public void testDbPort(@Value("${DB_PORT}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
     @DisplayName("DB_NAME")
-    public void testDbName() {
-        String var = env.getProperty("DB_NAME");
-
+    public void testDbName(@Value("${DB_NAME}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
     @DisplayName("DB_USERNAME")
-    public void testDbUsername() {
-        String var = env.getProperty("DB_USERNAME");
-
+    public void testDbUsername(@Value("${DB_USERNAME}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
     @DisplayName("DB_PASSWORD")
-    public void testDbPassword() {
-        String var = env.getProperty("DB_PASSWORD");
-
+    public void testDbPassword(@Value("${DB_PASSWORD}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
     @DisplayName("TEST_DB_HOST")
-    public void testTestDbHost() {
-        String var = env.getProperty("TEST_DB_HOST");
-
+    public void testTestDbHost(@Value("${TEST_DB_HOST}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
     @DisplayName("TEST_DB_PORT")
-    public void testTestDbPort() {
-        String var = env.getProperty("TEST_DB_PORT");
-
+    public void testTestDbPort(@Value("${TEST_DB_PORT}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
     @DisplayName("TEST_DB_NAME")
-    public void testTestDbName() {
-        String var = env.getProperty("TEST_DB_NAME");
-
+    public void testTestDbName(@Value("${TEST_DB_NAME}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
     @DisplayName("TEST_DB_USERNAME")
-    public void testTestDbUsername() {
-        String var = env.getProperty("TEST_DB_USERNAME");
-
+    public void testTestDbUsername(@Value("${TEST_DB_USERNAME}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
     @DisplayName("TEST_DB_PASSWORD")
-    public void testTestDbPassword() {
-        String var = env.getProperty("TEST_DB_PASSWORD");
-
+    public void testTestDbPassword(@Value("${TEST_DB_PASSWORD}") String var) {
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
