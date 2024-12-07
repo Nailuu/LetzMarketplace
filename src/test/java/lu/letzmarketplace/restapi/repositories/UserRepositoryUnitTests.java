@@ -21,31 +21,36 @@ class UserRepositoryUnitTests {
     @Autowired
     private UserRepository userRepository;
 
-    @Test
-    @DisplayName("Test 1: Save new user")
-    @Order(1)
-    @Rollback(false)
-    void saveUser() {
-        // Action
-        User user = User.builder()
+    private User mock;
+
+    @BeforeEach
+    void setUp() {
+        mock = User.builder()
                 .username("bob123")
                 .email("bob@test.lu")
                 .firstName("bob")
                 .lastName("joe")
                 .password("123")
                 .build();
+    }
 
-        userRepository.save(user);
+    @Test
+    @DisplayName("Test 1: Save new user")
+    @Order(1)
+    @Rollback(false)
+    void saveUser() {
+        // Action
+        userRepository.save(mock);
         userRepository.flush();
 
         // Verify
-        assertThat(user.getId()).isNotNull();
-        assertThat(user.getCreatedAt()).isNotNull();
-        assertThat(user.getUpdatedAt()).isNotNull();
+        assertThat(mock.getId()).isNotNull();
+        assertThat(mock.getCreatedAt()).isNotNull();
+        assertThat(mock.getUpdatedAt()).isNotNull();
 
         LocalDateTime now = LocalDateTime.now();
-        assertThat(user.getCreatedAt()).isBefore(now);
-        assertThat(user.getUpdatedAt()).isBefore(now);
+        assertThat(mock.getCreatedAt()).isBefore(now);
+        assertThat(mock.getUpdatedAt()).isBefore(now);
 
         assertThat(userRepository.findAll()).size().isEqualTo(1);
     }
@@ -55,12 +60,12 @@ class UserRepositoryUnitTests {
     @Order(2)
     void findUserByEmail() {
         // Action
-        User user = userRepository.findByEmail("bob@test.lu")
+        User user = userRepository.findByEmail(mock.getEmail())
                 .orElse(null);
 
         // Verify
         assertThat(user).isNotNull();
-        assertThat(user.getEmail()).isEqualTo("bob@test.lu");
+        assertThat(user.getEmail()).isEqualTo(mock.getEmail());
 
         // Action
         user = userRepository.findByEmail("unknown@test.lu")
@@ -75,12 +80,12 @@ class UserRepositoryUnitTests {
     @Order(3)
     void findByUsername() {
         // Action
-        User user = userRepository.findByUsername("bob123")
+        User user = userRepository.findByUsername(mock.getUsername())
                 .orElse(null);
 
         // Verify
         assertThat(user).isNotNull();
-        assertThat(user.getUsername()).isEqualTo("bob123");
+        assertThat(user.getUsername()).isEqualTo(mock.getUsername());
 
         // Action
         user = userRepository.findByUsername("unknown")

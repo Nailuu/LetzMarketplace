@@ -1,6 +1,7 @@
 package lu.letzmarketplace.restapi.configurations;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import io.jsonwebtoken.io.Decoders;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,8 @@ public class EnvironmentVariablesUnitTests {
         String var = dotenv.get("JWT_SECRET_KEY");
 
         assertThat(var).isNotNull();
-        assertThat(var.length()).isEqualTo(512);
+        assertThat(var).isNotEmpty();
+        assertThat(Decoders.BASE64.decode(var).length).isEqualTo(512);
     }
 
     @Test

@@ -119,16 +119,15 @@ public class JWTService {
     }
 
     public void storeOrUpdateRefreshToken(User user, String token) {
-        JWTRefreshTokenHistory history = JWTRefreshTokenHistory.builder()
-                .token(token)
-                .userId(user.getId())
-                .build();
+        JWTRefreshTokenHistory history = refreshTokenHistoryRepository.findByUserId(user.getId())
+                .orElse(JWTRefreshTokenHistory.builder()
+                    .userId(user.getId())
+                    .build()
+                );
 
-        if (refreshTokenHistoryRepository.findByUserId(user.getId()).isPresent()) {
-            refreshTokenHistoryRepository.updateByUserId(user.getId(), history);
-        } else {
-            refreshTokenHistoryRepository.save(history);
-        }
+        history.setToken(token);
+
+        refreshTokenHistoryRepository.save(history);
     }
 
     public Optional<JWTRefreshTokenHistory> getRefreshTokenHistoryByUserId(UUID userId) {

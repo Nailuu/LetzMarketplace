@@ -1,6 +1,7 @@
 package lu.letzmarketplace.restapi.models;
 
 import lombok.RequiredArgsConstructor;
+import lu.letzmarketplace.restapi.exceptions.UnverifiedAccountException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,6 +45,10 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
+        if (!user.isEmailVerified()) {
+            throw new UnverifiedAccountException("Account is not enabled. Please verify your email.");
+        }
+
         return true;
     }
 }

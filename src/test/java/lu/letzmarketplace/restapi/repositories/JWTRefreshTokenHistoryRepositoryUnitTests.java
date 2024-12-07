@@ -22,12 +22,19 @@ class JWTRefreshTokenHistoryRepositoryUnitTests {
     @Autowired
     private JWTRefreshTokenHistoryRepository jwtRefreshTokenHistoryRepository;
 
-    private final JWTRefreshTokenHistory data =JWTRefreshTokenHistory.builder().token("123").userId(UUID.randomUUID()).build();
+    private JWTRefreshTokenHistory data;
+
+    @BeforeEach
+    void setUp() {
+        data = JWTRefreshTokenHistory.builder()
+                .token("123")
+                .userId(UUID.randomUUID())
+                .build();
+    }
 
     @Test
     @DisplayName("Test 1: Save new history")
     @Order(1)
-    @Rollback(false)
     void saveHistory() {
         // Action
         jwtRefreshTokenHistoryRepository.save(data);
@@ -41,6 +48,7 @@ class JWTRefreshTokenHistoryRepositoryUnitTests {
     @Order(2)
     void findByUserId() {
         // Action
+        jwtRefreshTokenHistoryRepository.save(data);
         JWTRefreshTokenHistory result = jwtRefreshTokenHistoryRepository.findByUserId(data.getUserId())
                 .orElse(null);
 
@@ -50,13 +58,16 @@ class JWTRefreshTokenHistoryRepositoryUnitTests {
     }
 
     @Test
-    @DisplayName("Test 3: Update existing row by id")
+    @DisplayName("Test 3: Update")
     @Order(3)
-    void updateExistingRowById() {
+    void update() {
         // Action
+        jwtRefreshTokenHistoryRepository.save(data);
+        jwtRefreshTokenHistoryRepository.flush();
+
         String oldToken = data.getToken();
         data.setToken("token789");
-        jwtRefreshTokenHistoryRepository.updateByUserId(data.getUserId(), data);
+        jwtRefreshTokenHistoryRepository.save(data);
 
         // Assert
         JWTRefreshTokenHistory result = jwtRefreshTokenHistoryRepository.findByUserId(data.getUserId()).orElse(null);

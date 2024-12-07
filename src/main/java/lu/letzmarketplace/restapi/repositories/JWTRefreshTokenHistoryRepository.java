@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface JWTRefreshTokenHistoryRepository extends JpaRepository<JWTRefreshTokenHistory, String> {
+public interface JWTRefreshTokenHistoryRepository extends JpaRepository<JWTRefreshTokenHistory, UUID> {
     Optional<JWTRefreshTokenHistory> findByUserId(UUID userId);
-    void updateByUserId(UUID userId, JWTRefreshTokenHistory jwtRefreshTokenHistory);
 }

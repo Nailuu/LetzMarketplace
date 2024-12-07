@@ -41,7 +41,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        mailerService.sendUserVerificationEmail(user);
+        // mailerService.sendUserVerificationEmail(user);
 
         return user;
     }

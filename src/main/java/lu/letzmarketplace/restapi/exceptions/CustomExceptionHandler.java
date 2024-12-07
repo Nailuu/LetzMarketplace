@@ -47,7 +47,7 @@ public class CustomExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler({BadCredentialsException.class, InvalidJWTTokenException.class})
+    @ExceptionHandler({BadCredentialsException.class, InvalidJWTTokenException.class, UnverifiedAccountException.class})
     public ErrorResponseDTO handleUnauthorizedException(Exception ex, HttpServletRequest request) {
         return ErrorResponseDTO.builder()
                 .timestamp(LocalDateTime.now())

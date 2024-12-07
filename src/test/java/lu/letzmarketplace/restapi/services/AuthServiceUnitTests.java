@@ -192,7 +192,7 @@ class AuthServiceUnitTests {
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
         given(jwtService.validateToken(token, user)).willReturn(true);
         given(jwtService.getRefreshTokenHistoryByUserId(user.getId())).willReturn(
-                Optional.of(JWTRefreshTokenHistory.builder().token(refreshToken).build())
+                Optional.of(JWTRefreshTokenHistory.builder().token(token).build())
         );
         given(jwtService.generateAccessToken(user)).willReturn(accessToken);
         given(jwtService.generateRefreshToken(user)).willReturn(refreshToken);
