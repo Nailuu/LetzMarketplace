@@ -29,8 +29,8 @@ pipeline {
         GITHUB_REPO = 'Nailuu/LetzMarketplaceAPI'
         RELEASE_TAG = "v1.0.${env.BUILD_NUMBER}"
         RELEASE_NAME = "Release v1.0.${env.BUILD_NUMBER}"
-        RELEASE_BODY = "Automated release created by Jenkins pipeline."
-        JAR_FILE_PATH = "target/rest-api-${env.BUILD_NUMBER}.jar"
+        RELEASE_NOTES = "Automated release created by Jenkins pipeline."
+        JAR_FILE_PATH = "./target/rest-api-${env.BUILD_NUMBER}.jar"
     }
 
     stages {
@@ -76,38 +76,21 @@ pipeline {
             }
         }
 
+        stage('Login to GitHub') {
+            steps {
+                sh 'echo $GITHUB_TOKEN | gh auth login --with-token'
+            }
+        }
+
         stage('Create GitHub Release') {
             steps {
-                script {
-                    def response = sh(script: """
-                        curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
-                        -d '{
-                        "tag_name": "$RELEASE_TAG",
-                        "target_commitish": "main",
-                        "name": "$RELEASE_NAME",
-                        "body": "$RELEASE_BODY",
-                        "draft": false,
-                        "prerelease": false
-                        }' \
-                        https://api.github.com/repos/$GITHUB_REPO/releases
-                    """, returnStdout: true).trim()
-
-                    def release = readJSON text: response
-                    env.RELEASE_ID = release.id
-                }
+                sh 'gh release create $RELEASE_TAG --title $RELEASE_NAME --generate-notes --notes $RELEASE_NOTES'
             }
         }
 
         stage('Upload .jar to GitHub Release') {
             steps {
-                script {
-                sh """
-                curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
-                -H "Content-Type: application/octet-stream" \
-                --data-binary @$JAR_FILE_PATH \
-                "https://uploads.github.com/repos/$GITHUB_REPO/releases/$RELEASE_ID/assets?name=rest-api-$BUILD_NUMBER.jar"
-                """
-                }
+                sh 'gh release upload $RELEASE_TAG $JAR_FILE_PATH'
             }
         }
     }
