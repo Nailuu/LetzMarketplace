@@ -27,17 +27,23 @@ pipeline {
 
         GITHUB_TOKEN = credentials('GITHUB_TOKEN')
         GITHUB_REPO = 'Nailuu/LetzMarketplaceAPI'
-        RELEASE_TAG = "v1.0.${env.BUILD_NUMBER}"
-        RELEASE_NAME = "Release v1.0.${env.BUILD_NUMBER}"
+        RELEASE_NUMBER = "1.0.${env.BUILD_NUMBER}"
+        RELEASE_TAG = "v${env.RELEASE_NUMBER}"
+        RELEASE_NAME = "Release v${env.RELEASE_NUMBER}"
         RELEASE_NOTES = "Automated release created by Jenkins pipeline."
-        JAR_FILE_PATH = "./target/rest-api-1.0.${env.BUILD_NUMBER}.jar"
+        JAR_FILE_NAME = "rest-api-${env.RELEASE_NUMBER}.jar"
+        JAR_FILE_PATH = "./target/${env.JAR_FILE_NAME}"
+
+        DOCKER_USERNAME = credentials('DOCKER_USERNAME')
+        DOCKER_TOKEN = credentials('DOCKER_TOKEN')
+        DOCKER_REPO = credentials('DOCKER_REPO')
     }
 
     stages {
         stage('Build') {
             steps {
                 sh 'mvn --version'
-                sh 'mvn -B -DskipTests -Drevision=1.0.$BUILD_NUMBER clean package'
+                sh 'mvn -B -DskipTests -Drevision=$RELEASE_NUMBER clean package'
             }
         }
 
@@ -78,11 +84,33 @@ pipeline {
 
         stage('GitHub Release') {
             steps {
-                echo "Creating new GitHub Release ($RELEASE_TAG)"
+                echo 'Creating new GitHub Release ($RELEASE_TAG)'
                 sh 'gh release create "$RELEASE_TAG" --title "$RELEASE_NAME" --generate-notes --notes "$RELEASE_NOTES"'
 
-                echo "Uploading .jar packaged application to the GitHub Release"
+                echo 'Uploading .jar packaged application to the GitHub Release'
                 sh 'gh release upload "$RELEASE_TAG" $JAR_FILE_PATH'
+            }
+        }
+
+        stage('Dockerize') {
+            steps {
+                echo 'Building Docker image...'
+                sh '''
+                docker build \
+                --build-arg JAR_FILE_PATH=$JAR_FILE_PATH \
+                --build-arg JAR_FILE_NAME=$JAR_FILE_NAME \
+                -t $DOCKER_REPO:$RELEASE_NUMBER \
+                -t $DOCKER_REPO:latest .
+                '''
+
+                echo "Login to Docker Hub"
+                sh 'echo $DOCKER_TOKEN | docker login --username $DOCKER_USERNAME --password-stdin'
+
+                echo 'Pushing image to Docker Hub'
+                sh '''
+                docker push $DOCKER_REPO:$RELEASE_NUMBER
+                docker push $DOCKER_REPO:latest
+                '''
             }
         }
     }
