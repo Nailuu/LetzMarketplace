@@ -8,18 +8,20 @@ pipeline {
     }
 
     environment {
+        SPRING_PROFILE = 'test'
+
         CORS = credentials('CORS')
         JWT_SECRET_KEY = credentials('JWT_SECRET_KEY')
 
-        DB_HOST = credentials('DB_HOST')
-        DB_PORT = 5432
-        DB_NAME = "lmkp"
-        DB_USERNAME = credentials('DB_USERNAME')
-        DB_PASSWORD = credentials('DB_PASSWORD')
+        PROD_DB_HOST = credentials('PROD_DB_HOST')
+        PROD_DB_PORT = credentials('PROD_DB_PORT')
+        PROD_DB_NAME = credentials('PROD_DB_NAME')
+        PROD_DB_USERNAME = credentials('PROD_DB_USERNAME')
+        PROD_DB_PASSWORD = credentials('PROD_DB_PASSWORD')
 
         TEST_DB_HOST = credentials('TEST_DB_HOST')
-        TEST_DB_PORT = 5432
-        TEST_DB_NAME = "test"
+        TEST_DB_PORT = credentials('TEST_DB_PORT')
+        TEST_DB_NAME = credentials('TEST_DB_NAME')
         TEST_DB_USERNAME = credentials('TEST_DB_USERNAME')
         TEST_DB_PASSWORD = credentials('TEST_DB_PASSWORD')
 

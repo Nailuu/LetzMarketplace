@@ -28,45 +28,45 @@ public class EnvironmentVariablesUnitTests {
     }
 
     @Test
-    @DisplayName("DB_HOST")
+    @DisplayName("PROD_DB_HOST")
     public void testDbHost() {
-        String var = System.getenv("DB_HOST");
+        String var = System.getenv("PROD_DB_HOST");
 
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
-    @DisplayName("DB_PORT")
+    @DisplayName("PROD_DB_PORT")
     public void testDbPort() {
-        String var = System.getenv("DB_PORT");
+        String var = System.getenv("PROD_DB_PORT");
 
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
-    @DisplayName("DB_NAME")
+    @DisplayName("PROD_DB_NAME")
     public void testDbName() {
-        String var = System.getenv("DB_NAME");
+        String var = System.getenv("PROD_DB_NAME");
 
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
-    @DisplayName("DB_USERNAME")
+    @DisplayName("PROD_DB_USERNAME")
     public void testDbUsername() {
-        String var = System.getenv("DB_USERNAME");
+        String var = System.getenv("PROD_DB_USERNAME");
 
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
     }
 
     @Test
-    @DisplayName("DB_PASSWORD")
+    @DisplayName("PROD_DB_PASSWORD")
     public void testDbPassword() {
-        String var = System.getenv("DB_PASSWORD");
+        String var = System.getenv("PROD_DB_PASSWORD");
 
         assertThat(var).isNotNull();
         assertThat(var).isNotEmpty();
