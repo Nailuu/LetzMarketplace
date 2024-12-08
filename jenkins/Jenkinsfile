@@ -76,14 +76,6 @@ pipeline {
             }
         }
 
-        stage('Login to GitHub') {
-            steps {
-                sh 'echo $GITHUB_TOKEN > .git_token'
-                sh 'unset GITHUB_TOKEN'
-                sh 'cat .git_token | gh auth login --with-token'
-            }
-        }
-
         stage('GitHub Release') {
             steps {
                 echo "Creating new GitHub Release ($RELEASE_TAG)"
