@@ -34,10 +34,8 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                withMaven {
-                    sh 'mvn --version'
-                    sh 'mvn -B -DskipTests -Drevision=1.0.$BUILD_NUMBER clean package'
-                }
+                sh 'mvn --version'
+                sh 'mvn -B -DskipTests -Drevision=1.0.$BUILD_NUMBER clean package'
             }
         }
 
@@ -67,9 +65,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                withMaven {
-                    sh 'mvn test'
-                }
+                sh 'mvn test'
             }
             post {
                 always {
