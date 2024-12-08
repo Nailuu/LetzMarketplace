@@ -30,7 +30,7 @@ pipeline {
         RELEASE_TAG = "v1.0.${env.BUILD_NUMBER}"
         RELEASE_NAME = "Release v1.0.${env.BUILD_NUMBER}"
         RELEASE_NOTES = "Automated release created by Jenkins pipeline."
-        JAR_FILE_PATH = "./target/rest-api-${env.BUILD_NUMBER}.jar"
+        JAR_FILE_PATH = "./target/rest-api-1.0.${env.BUILD_NUMBER}.jar"
     }
 
     stages {
