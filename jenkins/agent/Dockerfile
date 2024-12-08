@@ -17,9 +17,8 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings
 RUN chmod a+r /etc/apt/keyrings/docker.asc
 RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 RUN apt-get update && apt-get install -y docker-ce-cli docker-buildx-plugin
-RUN groupadd docker
 RUN usermod -aG docker jenkins
-RUN newgrp docker
+RUN mkdir -p /etc/sudoers.d && echo "jenkins ALL=(ALL) NOPASSWD: /usr/bin/docker" > /etc/sudoers.d/jenkins
 
 # Install Flyway CLI
 RUN wget -qO- https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/11.0.1/flyway-commandline-11.0.1-linux-x64.tar.gz | tar -xvz && ln -s `pwd`/flyway-11.0.1/flyway /usr/local/bin
