@@ -19,7 +19,7 @@ pipeline {
 
         TEST_DB_HOST = credentials('TEST_DB_HOST')
         TEST_DB_PORT = 5432
-        TEST_DB_NAME = "postgres"
+        TEST_DB_NAME = "test"
         TEST_DB_USERNAME = credentials('TEST_DB_USERNAME')
         TEST_DB_PASSWORD = credentials('TEST_DB_PASSWORD')
 
