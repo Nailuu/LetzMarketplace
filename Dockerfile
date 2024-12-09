@@ -9,4 +9,6 @@ COPY ${JAR_FILE_PATH} .
 
 ENV JAR_FILE_NAME=${JAR_FILE_NAME}
 
-CMD ["java", "-jar", "${JAR_FILE_NAME}"]
+EXPOSE 8080
+
+CMD ["sh", "-c", "java -jar $JAR_FILE_NAME"]

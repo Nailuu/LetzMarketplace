@@ -111,6 +111,12 @@ pipeline {
                 docker push $DOCKER_REPO:$RELEASE_NUMBER
                 docker push $DOCKER_REPO:latest
                 '''
+
+                echo 'Clean'
+                sh '''
+                docker image rm $DOCKER_REPO:$RELEASE_NUMBER
+                docker image rm $DOCKER_REPO:latest
+                '''
             }
         }
     }
