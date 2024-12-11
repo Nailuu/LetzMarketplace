@@ -85,7 +85,10 @@ pipeline {
         stage('GitHub Release') {
             steps {
                 echo 'Creating new GitHub Release ($RELEASE_TAG)'
-                sh 'gh release create "$RELEASE_TAG" --title "$RELEASE_NAME" --generate-notes --notes "$RELEASE_NOTES"'
+                sh '''
+                gh release create "$RELEASE_TAG" --title "$RELEASE_NAME" --generate-notes --notes "$NOTES"
+                gh release edit "$RELEASE_TAG" --notes "$RELEASE_NOTES"
+                '''
 
                 echo 'Uploading .jar packaged application to the GitHub Release'
                 sh 'gh release upload "$RELEASE_TAG" $JAR_FILE_PATH'
@@ -110,6 +113,14 @@ pipeline {
                 sh '''
                 docker push $DOCKER_REPO:$RELEASE_NUMBER
                 docker push $DOCKER_REPO:latest
+                '''
+
+                echo "Add Docker Hub infos to GitHub Release"
+                sh '''
+                gh release view "$RELEASE_TAG" --json body | jq -r '.body' > release.txt
+                echo "\nDocker Hub: [nailuu/letz-marketplace-api](https://hub.docker.com/r/nailuu/letz-marketplace-api/)" >> release.txt
+                echo "Clone using \`docker pull $DOCKER_REPO:$RELEASE_NUMBER\`" >> release.txt
+                gh release edit "$RELEASE_TAG" --notes-file release.txt
                 '''
 
                 echo 'Clean'

@@ -10,7 +10,8 @@ RUN apt-get install -y \
     maven \
     wget \
     ca-certificates \
-    curl
+    curl \
+    jq
 
 # Install Docker
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
