@@ -119,7 +119,7 @@ pipeline {
                 sh '''
                 gh release view "$RELEASE_TAG" --json body | jq -r '.body' > release.txt
                 echo "\nDocker Hub: [nailuu/letz-marketplace-api](https://hub.docker.com/r/nailuu/letz-marketplace-api/)" >> release.txt
-                echo "Clone using \\\`docker pull $DOCKER_REPO:$RELEASE_NUMBER\\\`" >> release.txt
+                echo "Clone using \\`docker pull $DOCKER_REPO:$RELEASE_NUMBER\\`" >> release.txt
                 gh release edit "$RELEASE_TAG" --notes-file release.txt
                 '''
 
